@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔️ Task Quest</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    color:white;
+}
+
+.container{
+    width:100%;
+    max-width:600px;
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.stats{
+    margin-bottom:20px;
+}
+
+.stats p{
+    margin-bottom:8px;
+    font-size:18px;
+}
+
+.xp-bar{
+    width:100%;
+    height:25px;
+    background:rgba(255,255,255,0.2);
+    border-radius:50px;
+    overflow:hidden;
+}
+
+#xpFill{
+    width:0%;
+    height:100%;
+    background:linear-gradient(to right,gold,orange);
+    transition:0.5s;
+}
+
+.input-area{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+input{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+}
+
+#addBtn{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#00c853;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+#addBtn:hover{
+    background:#00e676;
+}
+
+ul{
+    list-style:none;
+}
+
+li{
+    background:rgba(255,255,255,0.2);
+    margin-top:10px;
+    padding:12px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.complete-btn{
+    border:none;
+    background:#ffeb3b;
+    color:black;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.complete-btn:hover{
+    background:#fff176;
+}
+
+#message{
+    margin-top:15px;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:gold;
+}
+
+.pet{
+    text-align:center;
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+.coins{
+    margin-top:10px;
+    font-size:18px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="pet" id="pet">🐣</div>
+
+    <h1>⚔️ Task Quest</h1>
+
+    <div class="stats">
+        <p>🏆 Level: <span id="level">1</span></p>
+        <p>⭐ XP: <span id="xp">0</span>/100</p>
+        <p class="coins">🪙 Coins: <span id="coins">0</span></p>
+
+        <div class="xp-bar">
+            <div id="xpFill"></div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input id="taskInput" placeholder="Enter a new quest...">
+        <button id="addBtn">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <div id="message"></div>
+
+    <div class="footer">
+        Complete quests to level up your pet!
+    </div>
+
+</div>
+
+<script>
+let xp = 0;
+let level = 1;
+let coins = 0;
+
+const addBtn = document.getElementById("addBtn");
+const taskInput = document.getElementById("taskInput");
+const taskList = document.getElementById("taskList");
+
+addBtn.addEventListener("click", addTask);
+
+taskInput.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        addTask();
+    }
+});
+
+function addTask(){
+
+    const text = taskInput.value.trim();
+
+    if(text === ""){
+        return;
+    }
+
+    const li = document.createElement("li");
+
+    const taskText = document.createElement("span");
+    taskText.textContent = text;
+
+    const completeBtn = document.createElement("button");
+    completeBtn.textContent = "Complete";
+    completeBtn.className = "complete-btn";
+
+    completeBtn.onclick = function(){
+        gainRewards();
+        li.remove();
+    };
+
+    li.appendChild(taskText);
+    li.appendChild(completeBtn);
+
+    taskList.appendChild(li);
+
+    taskInput.value = "";
+}
+
+function gainRewards(){
+
+    xp += 20;
+    coins += 10;
+
+    document.getElementById("coins").textContent = coins;
+
+    showMessage("✨ Quest Complete! +20 XP +10 Coins");
+
+    if(xp >= 100){
+        xp -= 100;
+        level++;
+
+        document.getElementById("level").textContent = level;
+
+        showMessage("🎉 LEVEL UP! You reached Level " + level);
+
+        updatePet();
+    }
+
+    document.getElementById("xp").textContent = xp;
+    document.getElementById("xpFill").style.width = xp + "%";
+}
+
+function updatePet(){
+
+    const pet = document.getElementById("pet");
+
+    if(level >= 10){
+        pet.textContent = "🐲";
+    }
+    else if(level >= 7){
+        pet.textContent = "🦄";
+    }
+    else if(level >= 5){
+        pet.textContent = "🐺";
+    }
+    else if(level >= 3){
+        pet.textContent = "🐱";
+    }
+    else{
+        pet.textContent = "🐣";
+    }
+}
+
+function showMessage(text){
+
+    const message = document.getElementById("message");
+
+    message.textContent = text;
+
+    setTimeout(() => {
+        message.textContent = "";
+    }, 3000);
+}
+</script>
+
+</body>
+</html>
